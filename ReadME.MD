@@ -3,18 +3,23 @@ for Mozilla Firefox archived bookmarks.
 
 ## Install, Requirements
 1. Copy files or clone repo
-2. Make shure `Python` installed you system
-3. Install `lz4` lib: `pip install lz4`
-4. Windows can ask for install additional requiremests for `lz4`. Say yes.
+2. Make shure `Python` installed in your system
+3. Install `lz4` lib by:  `pip install lz4`
+4. Windows can ask for install additional requiremests for `lz4`. Say yes to Windows.
 
-## Usage
-Usage in command line or scripts:
+## Usage in command line
 
 `python jsonlz4_to_html.py [-h] [-t] [-j] [-o] [-s] "input_filename"`
 
-Usage under Windows GUI:
-1. **Edit** `drop_onto_me.bat` as you like
-2. **Drag_n_Drop** source file onto `drop_onto_me.bat`. Accepts only one file at the time.
+or
+
+
+`drop_onto_me.bat "input_filename"`
+
+
+## Usage under Windows GUI
+1. **Edit** `drop_onto_me.bat` as you like to prefer action(s)
+2. Then **Drag_n_Drop** input .jsonlz4 or .baklz4 onto `drop_onto_me.bat`. Batch accepts only one file at the time.
 3. Resulting file(s) will be situated **at the same place as input file**.
 
 ## Keys and Parameters
