@@ -50,4 +50,7 @@ can be converted to .HTML format quite similar to the format
 Firefox uses itself for Import/Export bookmarks
 
 Resulting file will be situated at the same place as input file.
+
+Than you can import .HTML file to a new branch of Firefox bookmarks 
+without nesessity of replacing all of your old bookmarks.
 ```
