@@ -233,11 +233,7 @@ def main():
                 print("\nOutput .html file written:")
                 print(o_h_fpname)
 
-    # Pause to hold output window opened if not in silent-mode
-    if not args.s:
-        print("\nPress Enter to exit...")
-        input()
-        sys.exit(0)
+    sys.exit(0)
 
 
 # ================================================================
