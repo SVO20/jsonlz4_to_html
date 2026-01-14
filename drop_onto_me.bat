@@ -16,8 +16,8 @@ goto :END
 :PYTHON_DOES_EXIST
 cd /d "%~dp0"
 
-:: Prefer output in JSON and HTML with overwriting
-python jsonlz4_to_html.py -o -j -t "%~f1"
+:: Prefer output in JSON and HTML without overwriting
+python jsonlz4_to_html.py -j -t "%~f1"
 
 :: Uncomment underlying line to prefer output in HTML format
 :: python jsonlz4_to_html.py -t "%~f1"
@@ -28,7 +28,9 @@ python jsonlz4_to_html.py -o -j -t "%~f1"
 :: Uncomment underlying line to prefer output in JSON and HTML with zero output with overwriting
 :: python jsonlz4_to_html.py -o -j -t -s "%~f1"
 
+
 :END
+:: Comment pause below if you dont want `Press any key` stop
 pause
 exit /b
 

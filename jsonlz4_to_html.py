@@ -118,7 +118,7 @@ def bmk_to_html_strings(source_dict: dict, list_dst: list):
         return
 
 
-def bat_workaround_plus(in_str):
+def bat_workaround_plus(in_str: str):
     allowed_exts = {".jsonlz4", ".baklz4"}
     print (in_str)
 
@@ -128,19 +128,37 @@ def bat_workaround_plus(in_str):
 
     if ext:
         if ext.lower() not in allowed_exts:
-            raise ValueError(f"Unsupported extention: {ext} (.jsonlz4 or .baklz4 expected)")
+            # raise ValueError(f"Unsupported extention: {ext} (.jsonlz4 or .baklz4 expected)")
+            print(f"ERROR: Unsupported extention: {ext} (.jsonlz4 or .baklz4 expected)")
+            sys.exit(1)
         else:
             if os.path.exists(in_str):
                 return in_str
             else:
-                raise FileNotFoundError(f"File not found: {in_str}")
+                # raise FileNotFoundError(f"File not found: {in_str}")
+                print(f"ERROR: File not found: {in_str}")
+                sys.exit(1)
     else:
         for omitted_tail in ("=", "=="):
             for e in allowed_exts:
                 if os.path.exists(expected_path := os.path.join(dirname, root + omitted_tail + e)):
                     print(f"Workaround applied: restored '{omitted_tail + e}' → {expected_path}")
                     return expected_path
-        raise FileNotFoundError(f"No bookmarks file with = or == guessed.")
+        # raise FileNotFoundError(f"No bookmarks file with = or == guessed.")
+        print(f"ERROR: No bookmarks file with = or == guessed.")
+        sys.exit(1)
+
+
+def unique_path(path: str) -> str:
+    if not os.path.exists(path):
+        return path
+    base, ext = os.path.splitext(path)
+    n = 1
+    while True:
+        candidate = f"{base}({n}){ext}"
+        if not os.path.exists(candidate):
+            return candidate
+        n += 1
 
 
 # ================================================================
@@ -174,23 +192,32 @@ def main():
     # dragged_and_dropped paths in Windows.
     # The workaround of issue with omitted '==' symbols in filename dropped to .bat below
     i_fpname = bat_workaround_plus(i_fpname)
-
-    o_h_fpname = "".join(i_fpname.split(".")[:-1]) + ".html"
-    o_j_fpname = "".join(o_h_fpname.split(".")[:-1]) + ".json"
-
     if not os.path.exists(i_fpname):
         sys.exit(3)
-    if not args.o and os.path.exists(o_h_fpname):
-        sys.exit(4)
+    i_fpname_root = os.path.splitext(os.path.basename(i_fpname))[0]
+
+    # Develop output filenames
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    o_h_fpname = os.path.join(script_dir, i_fpname_root + ".html")
+    o_j_fpname = os.path.join(script_dir, i_fpname_root + ".json")
+
+    # Ensure unique output filenames if not overwrite mode
+    if not args.o:
+        o_h_fpname = unique_path(o_h_fpname)
+        o_j_fpname = unique_path(o_j_fpname)
 
     # Open JSONLZ4-like file
     # decode to utf-8
     with open(i_fpname, 'rb') as fin:
         if not fin.read(8) == b'mozLz40\0':
-            raise ValueError("Not a valid Mozilla .jsonlz4 file")
+            # raise ValueError("Not a valid Mozilla .jsonlz4 file")
+            print(f"ERROR: Not a valid Mozilla .jsonlz4 file")
+            sys.exit(1)
         header_plus = fin.read(100)
         if b"version" in header_plus or b"guid" not in header_plus:
-            raise ValueError("Given .jsonlz4 is not a bookmarks archive file.")
+            # raise ValueError("Given .jsonlz4 is not a bookmarks archive file.")
+            print(f"ERROR: Given .jsonlz4 is not a bookmarks archive file.")
+            sys.exit(1)
         fin.seek(8)  # rewind to after header
 
         b_data = lz4.decompress(fin.read())
@@ -200,9 +227,6 @@ def main():
             print(i_fpname)
             print("\n...and just decoded")
 
-    # Open .json variant for testing purposes
-    # with open("bookmarks-2022-03-11.json", 'r', encoding='utf-8') as fin:
-    #     c_bookmarks = json.load(fin)
     c_bookmarks = json.loads(utf8_str_data)
 
     # Save indented .json variant
