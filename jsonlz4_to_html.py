@@ -118,17 +118,29 @@ def bmk_to_html_strings(source_dict: dict, list_dst: list):
         return
 
 
-def bat_workaround(in_str):
-    if os.path.exists(in_str):
-        return in_str
-    basename = os.path.basename(in_str)
+def bat_workaround_plus(in_str):
+    allowed_exts = {".jsonlz4", ".baklz4"}
+    print (in_str)
+
     dirname = os.path.dirname(in_str)
-    # if "filename without extention" + "==" + ".jsonlz4" or ".baklz4" exists - return exactly that
-    if os.path.exists(dirname + r"\\" + basename + r"==" + ".jsonlz4"):
-        return dirname + r"\\" + basename + r"==" + ".jsonlz4"
-    if os.path.exists(dirname + r"\\" + basename + r"==" + ".baklz4"):
-        return dirname + r"\\" + basename + r"==" + ".baklz4"
-    return in_str
+    basename = os.path.basename(in_str)
+    root, ext = os.path.splitext(basename)
+
+    if ext:
+        if ext.lower() not in allowed_exts:
+            raise ValueError(f"Unsupported extention: {ext} (.jsonlz4 or .baklz4 expected)")
+        else:
+            if os.path.exists(in_str):
+                return in_str
+            else:
+                raise FileNotFoundError(f"File not found: {in_str}")
+    else:
+        for omitted_tail in ("=", "=="):
+            for e in allowed_exts:
+                if os.path.exists(expected_path := os.path.join(dirname, root + omitted_tail + e)):
+                    print(f"Workaround applied: restored '{omitted_tail + e}' → {expected_path}")
+                    return expected_path
+        raise FileNotFoundError(f"No bookmarks file with = or == guessed.")
 
 
 # ================================================================
@@ -161,7 +173,7 @@ def main():
     # at least one space symbol. It is due to twisted handling double quotation marks "" around
     # dragged_and_dropped paths in Windows.
     # The workaround of issue with omitted '==' symbols in filename dropped to .bat below
-    i_fpname = bat_workaround(i_fpname)
+    i_fpname = bat_workaround_plus(i_fpname)
 
     o_h_fpname = "".join(i_fpname.split(".")[:-1]) + ".html"
     o_j_fpname = "".join(o_h_fpname.split(".")[:-1]) + ".json"
