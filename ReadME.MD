@@ -1,11 +1,13 @@
 # JSONLZ4 to HTML converter
 for Mozilla Firefox archived bookmarks.
 
+
 ## Install, Requirements
 1. Copy files or clone repo
 2. Make shure `Python` installed in your system
 3. Install `lz4` lib by:  `pip install lz4`
 4. Windows can ask for install additional requiremests for `lz4`. Say yes to Windows.
+
 
 ## Usage in command line
 
@@ -13,14 +15,19 @@ for Mozilla Firefox archived bookmarks.
 
 or
 
-
 `drop_onto_me.bat "input_filename"`
 
 
 ## Usage under Windows GUI
 1. **Edit** `drop_onto_me.bat` as you like to prefer action(s)
 2. Then **Drag_n_Drop** input .jsonlz4 or .baklz4 onto `drop_onto_me.bat`. Batch accepts only one file at the time.
-3. Resulting file(s) will be situated **at the same place as input file**.
+3. Resulting file(s) will be situated **in the script's folder**.
+
+
+## Where to find Firefox bookmarks archives
+Usually somewhere around:
+`C:\Users\<Username>\AppData\Roaming\Mozilla\Firefox\Profiles\<random_string>.default-<ff_release>\bookmarkbackups\`
+
 
 ## Keys and Parameters
 Help:
