@@ -187,7 +187,12 @@ def main():
     # decode to utf-8
     with open(i_fpname, 'rb') as fin:
         if not fin.read(8) == b'mozLz40\0':
-            sys.exit(5)
+            raise ValueError("Not a valid Mozilla .jsonlz4 file")
+        header_plus = fin.read(100)
+        if b"version" in header_plus or b"guid" not in header_plus:
+            raise ValueError("Given .jsonlz4 is not a bookmarks archive file.")
+        fin.seek(8)  # rewind to after header
+
         b_data = lz4.decompress(fin.read())
         utf8_str_data = b_data.decode('utf-8')
         if not args.s:
